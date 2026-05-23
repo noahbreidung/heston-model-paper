@@ -8,7 +8,7 @@ Live page: https://noahbreidung.github.io/heston-model-paper/
 
 The paper studies the Heston stochastic volatility model under the risk-neutral measure. It combines the mathematical structure of the CIR variance process with numerical simulation, Monte Carlo option pricing and calibration to SPY implied-volatility data.
 
-The public page in this repository turns the PDF into a chapter-based web reader with a left-hand table of contents. The original PDF remains available as the source document.
+The public page in this repository turns the paper into a chapter-based web reader with a left-hand table of contents and MathJax-rendered formulas. The original PDF remains available as the source document.
 
 ## Topics
 
@@ -20,7 +20,7 @@ The public page in this repository turns the PDF into a chapter-based web reader
 
 ## Repository Layout
 
-- `index.html`: chapter-based static web reader generated from the PDF text
+- `index.html`: chapter-based static web reader with MathJax-rendered formulas
 - `assets/heston-model-paper.pdf`: seminar paper PDF
 - `assets/heston-paper-cover-01.png`: rendered cover preview
 - `assets/pdf-images/`: figures extracted from the PDF

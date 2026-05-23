@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Heston Model | Theory, Simulation and Calibration</title>
+    <meta
+      name="description"
+      content="Public project page for Noah Breidung's paper on the Heston model, numerical simulation and calibration to SPY implied volatilities."
+    >
+    <meta property="og:title" content="The Heston Model">
+    <meta
+      property="og:description"
+      content="Theory, numerical simulation and calibration of the Heston stochastic volatility model."
+    >
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="assets/heston-paper-cover-01.png">
+    <link rel="stylesheet" href="assets/styles.css">
+  </head>
+  <body>
+    <main>
+      <article class="paper-page">
+        <header class="hero">
+          <div class="hero-copy">
+            <p class="kicker">Seminar paper · March 18, 2026</p>
+            <h1>The Heston Model</h1>
+            <p class="subtitle">Theory, Numerical Simulation and Calibration</p>
+            <p class="byline">Noah Breidung</p>
+            <div class="action-row" aria-label="Paper links">
+              <a class="primary-link" href="assets/heston-model-paper.pdf">Open PDF</a>
+              <a href="#paper">Read on page</a>
+            </div>
+          </div>
+          <figure class="cover">
+            <img
+              src="assets/heston-paper-cover-01.png"
+              alt="Cover page of the Heston model paper"
+            >
+          </figure>
+        </header>
+
+        <section class="abstract-section" aria-label="Abstract">
+          <h2>Abstract</h2>
+          <p>
+            This paper studies the Heston model as a risk-neutral stochastic
+            volatility model with particular emphasis on the
+            Cox-Ingersoll-Ross-type variance process. It specifies the model
+            framework, the log-price representation and the role of the Feller
+            condition before turning to existence, uniqueness, non-negativity
+            and boundary behavior of the variance process.
+          </p>
+          <p>
+            Building on this structure, the paper organizes time
+            discretization, Monte Carlo pricing and calibration in the space of
+            implied volatilities. The empirical study uses cleaned SPY option
+            data and discusses the limits of the Heston model as motivation for
+            rough-volatility approaches.
+          </p>
+        </section>
+
+        <section class="topics" aria-label="Main topics">
+          <h2>Main Topics</h2>
+          <ul>
+            <li>Risk-neutral Heston dynamics and log-price representation</li>
+            <li>CIR variance process, Feller condition and boundary behavior</li>
+            <li>Full-Truncation Euler, Log-Euler and Monte Carlo pricing</li>
+            <li>Calibration to SPY implied volatility smiles</li>
+          </ul>
+        </section>
+
+        <section class="figures" aria-label="Selected figures">
+          <h2>Selected Figures</h2>
+          <div class="figure-grid">
+            <figure>
+              <img
+                src="assets/figures/iv_surface_SPY.png"
+                alt="SPY implied volatility surface"
+              >
+              <figcaption>SPY implied volatility surface used as market input.</figcaption>
+            </figure>
+            <figure>
+              <img
+                src="assets/figures/calibration_fit_scatter_SPY_2026-04-17.png"
+                alt="Scatter plot comparing market and model implied volatilities"
+              >
+              <figcaption>Calibration fit for the primary SPY option maturity.</figcaption>
+            </figure>
+            <figure>
+              <img
+                src="assets/figures/smile_compare_in_sample_SPY_2026-04-17.png"
+                alt="In-sample implied volatility smile comparison"
+              >
+              <figcaption>In-sample smile comparison after calibration.</figcaption>
+            </figure>
+            <figure>
+              <img
+                src="assets/figures/plot3_loglog_sup_error.png"
+                alt="Log-log convergence plot for the variance process"
+              >
+              <figcaption>Numerical convergence behavior of the variance process.</figcaption>
+            </figure>
+          </div>
+        </section>
+
+        <section id="paper" class="reader" aria-label="Embedded paper">
+          <div class="section-heading">
+            <h2>Paper</h2>
+            <a href="assets/heston-model-paper.pdf">Download PDF</a>
+          </div>
+          <object
+            data="assets/heston-model-paper.pdf"
+            type="application/pdf"
+            aria-label="Embedded PDF of the Heston model paper"
+          >
+            <p>
+              The browser PDF viewer is not available.
+              <a href="assets/heston-model-paper.pdf">Open the PDF directly</a>.
+            </p>
+          </object>
+        </section>
+      </article>
+    </main>
+  </body>
+</html>

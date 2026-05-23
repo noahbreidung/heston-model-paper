@@ -1,6 +1,6 @@
 # The Heston Model
 
-Project page for the seminar paper **The Heston Model: Theory, Numerical Simulation and Calibration**.
+Readable web version of the seminar paper **The Heston Model: Theory, Numerical Simulation and Calibration**.
 
 Live page: https://noahbreidung.github.io/heston-model-paper/
 
@@ -8,7 +8,7 @@ Live page: https://noahbreidung.github.io/heston-model-paper/
 
 The paper studies the Heston stochastic volatility model under the risk-neutral measure. It combines the mathematical structure of the CIR variance process with numerical simulation, Monte Carlo option pricing and calibration to SPY implied-volatility data.
 
-The public page in this repository provides a readable project overview, selected plots and the embedded PDF.
+The public page in this repository turns the PDF into a chapter-based web reader with a left-hand table of contents. The original PDF remains available as the source document.
 
 ## Topics
 
@@ -20,10 +20,10 @@ The public page in this repository provides a readable project overview, selecte
 
 ## Repository Layout
 
-- `index.html`: static project page
+- `index.html`: chapter-based static web reader generated from the PDF text
 - `assets/heston-model-paper.pdf`: seminar paper PDF
 - `assets/heston-paper-cover-01.png`: rendered cover preview
-- `assets/figures/`: selected numerical figures
+- `assets/pdf-images/`: figures extracted from the PDF
 - `.github/workflows/pages.yml`: GitHub Pages deployment workflow
 
 ## Status

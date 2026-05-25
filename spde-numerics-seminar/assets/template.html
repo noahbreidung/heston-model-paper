@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>$pagetitle$</title>
+    <meta name="description" content="Readable web version of seminar notes on numerical approximation of a stochastic heat equation.">
+    <meta property="og:title" content="Numerical Approximation of a Stochastic Heat Equation">
+    <meta property="og:description" content="Spectral Galerkin approximation and exact Ornstein--Uhlenbeck simulation for a stochastic heat equation.">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="spde_outputs/06_animation_snapshots.png">
+    <link rel="stylesheet" href="assets/styles.css">
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['\\(', '\\)']],
+          displayMath: [['\\[', '\\]']],
+          processEscapes: true,
+          tags: 'ams'
+        },
+        chtml: {
+          displayAlign: 'center',
+          scale: 0.98
+        }
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script>
+  </head>
+  <body>
+    <div class="reader-layout">
+      <aside class="sidebar" aria-label="Table of contents">
+        <div class="sidebar-inner">
+          <a class="brand" href="#top">Numerical Approximation of a Stochastic Heat Equation</a>
+          <p class="sidebar-subtitle">Seminar Notes</p>
+          $if(toc)$
+          <nav id="$idprefix$TOC" role="doc-toc">
+            $table-of-contents$
+          </nav>
+          $endif$
+        </div>
+      </aside>
+      <main id="top" class="paper">
+        <div class="resource-links">
+          <a href="assets/spde-numerics-seminar.pdf">Download PDF</a>
+          <a href="assets/spde_numerics_seminar.tex">LaTeX source</a>
+          <a href="code/spde_heat_simulation.py">Simulation code</a>
+          <a href="code/spde_heat_plots.py">Plot code</a>
+          <a href="spde_outputs/05_solution_animation.gif">Animation</a>
+        </div>
+        $body$
+      </main>
+    </div>
+  </body>
+</html>

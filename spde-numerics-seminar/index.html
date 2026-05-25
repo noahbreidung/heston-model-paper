@@ -1,0 +1,1525 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Numerical Approximation of a Stochastic Heat Equation</title>
+    <meta name="description" content="Readable web version of seminar notes on numerical approximation of a stochastic heat equation.">
+    <meta property="og:title" content="Numerical Approximation of a Stochastic Heat Equation">
+    <meta property="og:description" content="Spectral Galerkin approximation and exact Ornstein--Uhlenbeck simulation for a stochastic heat equation.">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="spde_outputs/06_animation_snapshots.png">
+    <link rel="stylesheet" href="assets/styles.css">
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['\\(', '\\)']],
+          displayMath: [['\\[', '\\]']],
+          processEscapes: true,
+          tags: 'ams'
+        },
+        chtml: {
+          displayAlign: 'center',
+          scale: 0.98
+        }
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script>
+  </head>
+  <body>
+    <div class="reader-layout">
+      <aside class="sidebar" aria-label="Table of contents">
+        <div class="sidebar-inner">
+          <a class="brand" href="#top">Numerical Approximation of a Stochastic Heat Equation</a>
+          <p class="sidebar-subtitle">Seminar Notes</p>
+                    <nav id="TOC" role="doc-toc">
+            <ul>
+            <li><a href="#introduction" id="toc-introduction"><span
+            class="toc-section-number">1</span> Introduction</a></li>
+            <li><a href="#the-deterministic-heat-equation"
+            id="toc-the-deterministic-heat-equation"><span
+            class="toc-section-number">2</span> The Deterministic Heat
+            Equation</a>
+            <ul>
+            <li><a href="#classical-formulation"
+            id="toc-classical-formulation"><span
+            class="toc-section-number">2.1</span> Classical
+            formulation</a></li>
+            <li><a href="#heat-flow-on-the-real-line"
+            id="toc-heat-flow-on-the-real-line"><span
+            class="toc-section-number">2.2</span> Heat flow on the real
+            line</a></li>
+            <li><a href="#dirichlet-laplacian-on-01"
+            id="toc-dirichlet-laplacian-on-01"><span
+            class="toc-section-number">2.3</span> Dirichlet Laplacian on
+            <span class="math inline">\((0,1)\)</span></a></li>
+            </ul></li>
+            <li><a href="#semigroups-and-abstract-formulation"
+            id="toc-semigroups-and-abstract-formulation"><span
+            class="toc-section-number">3</span> Semigroups and Abstract
+            Formulation</a>
+            <ul>
+            <li><a href="#c_0-semigroups" id="toc-c_0-semigroups"><span
+            class="toc-section-number">3.1</span> <span
+            class="math inline">\(C_0\)</span>-semigroups</a></li>
+            <li><a href="#the-heat-semigroup"
+            id="toc-the-heat-semigroup"><span
+            class="toc-section-number">3.2</span> The heat
+            semigroup</a></li>
+            <li><a href="#inhomogeneous-deterministic-equation"
+            id="toc-inhomogeneous-deterministic-equation"><span
+            class="toc-section-number">3.3</span> Inhomogeneous
+            deterministic equation</a></li>
+            </ul></li>
+            <li><a
+            href="#brownian-motion-wiener-processes-and-cylindrical-noise"
+            id="toc-brownian-motion-wiener-processes-and-cylindrical-noise"><span
+            class="toc-section-number">4</span> Brownian Motion, Wiener
+            Processes and Cylindrical Noise</a>
+            <ul>
+            <li><a href="#brownian-motion"
+            id="toc-brownian-motion"><span
+            class="toc-section-number">4.1</span> Brownian
+            motion</a></li>
+            <li><a href="#hilbert-space-setup"
+            id="toc-hilbert-space-setup"><span
+            class="toc-section-number">4.2</span> Hilbert-space
+            setup</a></li>
+            <li><a href="#cylindrical-wiener-process"
+            id="toc-cylindrical-wiener-process"><span
+            class="toc-section-number">4.3</span> Cylindrical Wiener
+            process</a></li>
+            </ul></li>
+            <li><a
+            href="#the-stochastic-heat-equation-as-an-abstract-spde"
+            id="toc-the-stochastic-heat-equation-as-an-abstract-spde"><span
+            class="toc-section-number">5</span> The Stochastic Heat
+            Equation as an Abstract SPDE</a>
+            <ul>
+            <li><a href="#abstract-formulation"
+            id="toc-abstract-formulation"><span
+            class="toc-section-number">5.1</span> Abstract
+            formulation</a></li>
+            <li><a
+            href="#why-the-classical-formulation-is-not-sufficient"
+            id="toc-why-the-classical-formulation-is-not-sufficient"><span
+            class="toc-section-number">5.2</span> Why the classical
+            formulation is not sufficient</a></li>
+            </ul></li>
+            <li><a href="#mild-solutions" id="toc-mild-solutions"><span
+            class="toc-section-number">6</span> Mild Solutions</a>
+            <ul>
+            <li><a href="#stochastic-integral-with-cylindrical-noise"
+            id="toc-stochastic-integral-with-cylindrical-noise"><span
+            class="toc-section-number">6.1</span> Stochastic integral
+            with cylindrical noise</a></li>
+            <li><a href="#definition" id="toc-definition"><span
+            class="toc-section-number">6.2</span> Definition</a></li>
+            </ul></li>
+            <li><a
+            href="#spectral-decomposition-and-existence-of-the-solution"
+            id="toc-spectral-decomposition-and-existence-of-the-solution"><span
+            class="toc-section-number">7</span> Spectral Decomposition
+            and Existence of the Solution</a>
+            <ul>
+            <li><a href="#fourier-representation"
+            id="toc-fourier-representation"><span
+            class="toc-section-number">7.1</span> Fourier
+            representation</a></li>
+            <li><a href="#existence-theorem"
+            id="toc-existence-theorem"><span
+            class="toc-section-number">7.2</span> Existence
+            theorem</a></li>
+            </ul></li>
+            <li><a href="#numerical-simulation-and-convergence"
+            id="toc-numerical-simulation-and-convergence"><span
+            class="toc-section-number">8</span> Numerical Simulation and
+            Convergence</a>
+            <ul>
+            <li><a href="#spectral-galerkin-approximation"
+            id="toc-spectral-galerkin-approximation"><span
+            class="toc-section-number">8.1</span> Spectral Galerkin
+            approximation</a></li>
+            <li><a href="#convergence-theorem-for-spectral-truncation"
+            id="toc-convergence-theorem-for-spectral-truncation"><span
+            class="toc-section-number">8.2</span> Convergence theorem
+            for spectral truncation</a></li>
+            <li><a href="#time-discretization"
+            id="toc-time-discretization"><span
+            class="toc-section-number">8.3</span> Time
+            discretization</a></li>
+            <li><a href="#convergence-with-exact-time-stepping"
+            id="toc-convergence-with-exact-time-stepping"><span
+            class="toc-section-number">8.4</span> Convergence with exact
+            time stepping</a></li>
+            <li><a href="#implementation-outline"
+            id="toc-implementation-outline"><span
+            class="toc-section-number">8.5</span> Implementation
+            outline</a></li>
+            </ul></li>
+            <li><a href="#numerical-results"
+            id="toc-numerical-results"><span
+            class="toc-section-number">9</span> Numerical Results</a>
+            <ul>
+            <li><a href="#reference-experiment"
+            id="toc-reference-experiment"><span
+            class="toc-section-number">9.1</span> Reference
+            experiment</a></li>
+            <li><a href="#energy-check" id="toc-energy-check"><span
+            class="toc-section-number">9.2</span> Energy check</a></li>
+            <li><a href="#snapshot-from-the-animation"
+            id="toc-snapshot-from-the-animation"><span
+            class="toc-section-number">9.3</span> Snapshot from the
+            animation</a></li>
+            <li><a href="#expected-qualitative-behavior"
+            id="toc-expected-qualitative-behavior"><span
+            class="toc-section-number">9.4</span> Expected qualitative
+            behavior</a></li>
+            </ul></li>
+            <li><a href="#outlook" id="toc-outlook"><span
+            class="toc-section-number">10</span> Outlook</a></li>
+            <li><a href="#app:ito-isometry"
+            id="toc-app:ito-isometry"><span
+            class="toc-section-number">11</span> Ito Isometry for
+            Cylindrical Noise</a></li>
+            <li><a href="#app:python-code"
+            id="toc-app:python-code"><span
+            class="toc-section-number">12</span> Python Code for Paths
+            and Error Computation</a></li>
+            </ul>
+          </nav>
+                  </div>
+      </aside>
+      <main id="top" class="paper">
+        <div class="resource-links">
+          <a href="assets/spde-numerics-seminar.pdf">Download PDF</a>
+          <a href="assets/spde_numerics_seminar.tex">LaTeX source</a>
+          <a href="code/spde_heat_simulation.py">Simulation code</a>
+          <a href="code/spde_heat_plots.py">Plot code</a>
+          <a href="spde_outputs/05_solution_animation.gif">Animation</a>
+        </div>
+        <h4 class="unnumbered" id="note-on-the-use-of-ai-tools.">Note on
+        the use of AI tools.</h4>
+        <p>During the preparation of these notes, AI-assisted tools were
+        used in a supporting role. ChatGPT was used for the linguistic
+        revision of individual formulations and for translation into
+        English. The code used to generate the numerical plots was
+        created with the help of Codex and was subsequently reviewed,
+        adapted, and validated.</p>
+        <h1 data-number="1" id="introduction"><span
+        class="header-section-number">1</span> Introduction</h1>
+        <p>The deterministic heat equation is a basic model for
+        diffusion. On a spatial domain <span
+        class="math inline">\(\Omega\)</span>, the unknown <span
+        class="math inline">\(u(t,x)\)</span> describes a temperature,
+        concentration, or density. In one space dimension the sign of
+        the second derivative gives a direct intuition for the equation.
+        At a point where the graph is locally concave, <span
+        class="math inline">\(u_{xx}&lt;0\)</span>, so the equation
+        <span class="math inline">\(u_t=u_{xx}\)</span> makes the value
+        decrease in time. At a point where the graph is locally convex,
+        <span class="math inline">\(u_{xx}&gt;0\)</span>, so the value
+        increases. Peaks are therefore lowered and valleys are filled,
+        which is the basic smoothing effect of heat flow. A derivation
+        from energy balance and Fourier’s law is given in the PDE I
+        notes <span class="citation" data-cites="stinnerPDE1"></span>.
+        In the simplest homogeneous case one obtains <span
+        class="math display">\[\partial_t u(t,x)=\Delta u(t,x).\]</span>
+        The role of initial and boundary conditions is also part of this
+        deterministic theory <span class="citation"
+        data-cites="stinnerPDE1"></span>.</p>
+        <p>In many applications the system is not perfectly
+        deterministic. Random microscopic fluctuations, unresolved
+        forcing, or measurement errors can be modeled by adding noise to
+        the equation. The formal model studied here is <span
+        class="math display">\[\partial_t
+        u(t,x)=\partial_{xx}u(t,x)+\dot W(t,x),
+          \qquad x\in(0,1),\quad t&gt;0,\]</span> with homogeneous
+        Dirichlet boundary conditions <span
+        class="math display">\[u(t,0)=u(t,1)=0.\]</span> The symbol
+        <span class="math inline">\(\dot W\)</span> denotes space-time
+        white noise. It is not a classical function and, even as a
+        random distribution, it is not an <span
+        class="math inline">\(L^2(0,1)\)</span>-valued forcing term.
+        Therefore the equation cannot be understood pointwise in the
+        same sense as a smooth deterministic PDE. One could try to
+        interpret the equation pathwise for fixed <span
+        class="math inline">\(\omega\)</span> in a distributional sense.
+        In these notes we instead deliberately use the stochastic
+        semigroup formulation, because it is a robust framework for more
+        general SPDEs and is very convenient for numerical analysis: the
+        same formula that defines the solution also leads directly to a
+        convergent spectral algorithm <span class="citation"
+        data-cites="delSarto2025 daPratoZabczyk lordPowellShardlow"></span>.
+        The goal of these notes is to show how the equation is
+        formulated and solved in the Hilbert space <span
+        class="math display">\[H=L^2(0,1),\]</span> and how this
+        formulation directly leads to a practical and convergent
+        numerical method.</p>
+        <p>The main information is taken from lecture notes for courses
+        held at TU Darmstadt and EPFL. The deterministic heat equation
+        and eigenfunction material are based on the PDE I notes <span
+        class="citation" data-cites="stinnerPDE1"></span>; the semigroup
+        and abstract Cauchy-problem background is based on the PDE II
+        notes <span class="citation" data-cites="stinnerPDE2"></span>;
+        the stochastic analysis, Wiener processes in Hilbert spaces,
+        stochastic convolution and additive SPDE framework are based on
+        Del Sarto’s lecture notes <span class="citation"
+        data-cites="delSarto2025"></span>. The coordinate-free viewpoint
+        on white noise and stochastic PDEs is taken as supplementary
+        background from Hairer’s EPFL notes <span class="citation"
+        data-cites="hairer2009"></span>. Further standard references
+        used for SPDE theory and numerical SPDEs are <span
+        class="citation"
+        data-cites="daPratoZabczyk lordPowellShardlow"></span>.</p>
+        <h1 data-number="2" id="the-deterministic-heat-equation"><span
+        class="header-section-number">2</span> The Deterministic Heat
+        Equation</h1>
+        <h2 data-number="2.1" id="classical-formulation"><span
+        class="header-section-number">2.1</span> Classical
+        formulation</h2>
+        <p>On a smooth domain <span
+        class="math inline">\(\Omega\subset\mathbb{R}^d\)</span>, the
+        inhomogeneous heat equation has the form <span
+        class="math display">\[\partial_t u(t,x)=\Delta u(t,x)+f(t,x),
+          \qquad (t,x)\in(0,T]\times\Omega.\]</span> To obtain a
+        well-posed problem one prescribes an initial condition <span
+        class="math display">\[u(0,x)=u_0(x)\]</span> and suitable
+        boundary conditions. In this text we use homogeneous Dirichlet
+        conditions on <span class="math inline">\((0,1)\)</span>: <span
+        class="math display">\[u(t,0)=u(t,1)=0.\]</span> This is the
+        natural deterministic prototype for the stochastic heat equation
+        treated later.</p>
+        <h2 data-number="2.2" id="heat-flow-on-the-real-line"><span
+        class="header-section-number">2.2</span> Heat flow on the real
+        line</h2>
+        <p>On <span class="math inline">\(\mathbb{R}^d\)</span>, the
+        fundamental solution of the heat equation is <span
+        class="math display">\[\Phi(x,t)=\frac{1}{(4\pi
+        t)^{d/2}}\exp\left(-\frac{|x|^2}{4t}\right),
+          \qquad t&gt;0.\]</span> For bounded and continuous initial
+        data <span class="math inline">\(u_0\)</span>, the solution of
+        the Cauchy problem on <span
+        class="math inline">\(\mathbb{R}^d\)</span> is given by
+        convolution, <span
+        class="math display">\[u(t,x)=\int_{\mathbb{R}^d}\Phi(x-y,t)u_0(y)\,\mathrm{d}y.\]</span>
+        This formula illustrates the smoothing effect of the heat
+        equation. Even if the initial data is only moderately regular,
+        the solution becomes smooth for positive times. This smoothing
+        property is also the reason why the stochastic convolution below
+        is well-defined in one spatial dimension. The fundamental
+        solution formula and its smoothing interpretation are standard
+        material from the deterministic heat equation theory in <span
+        class="citation" data-cites="stinnerPDE1"></span>.</p>
+        <h2 data-number="2.3" id="dirichlet-laplacian-on-01"><span
+        class="header-section-number">2.3</span> Dirichlet Laplacian on
+        <span class="math inline">\((0,1)\)</span></h2>
+        <p>For the interval <span class="math inline">\((0,1)\)</span>,
+        let <span class="math display">\[H=L^2(0,1),\qquad
+          \left\langle u,v \right\rangle_H=\int_0^1
+        u(x)v(x)\,\mathrm{d}x.\]</span> The Dirichlet Laplace operator
+        is <span class="math display">\[A=\partial_{xx},\qquad
+          D(A)=H^2(0,1)\cap H_0^1(0,1).\]</span> It is negative
+        self-adjoint and has compact resolvent. In particular, it admits
+        an orthonormal eigenbasis in <span
+        class="math inline">\(H\)</span>. Explicitly, <span
+        class="math display">\[e_k(x)=\sqrt{2}\sin(k\pi x),
+          \qquad
+          \lambda_k=(k\pi)^2,
+          \qquad k\in\mathbb{N},\]</span> and <span
+        class="math display">\[Ae_k=-\lambda_k e_k.\]</span> Thus every
+        <span class="math inline">\(v\in H\)</span> has the Fourier
+        expansion <span class="math display">\[v=\sum_{k=1}^{\infty} v_k
+        e_k,
+          \qquad
+          v_k=\left\langle v,e_k \right\rangle_H,\]</span> with <span
+        class="math display">\[\left\lVert v
+        \right\rVert_H^2=\sum_{k=1}^{\infty}|v_k|^2.\]</span> The
+        general existence of eigenvalues and an orthonormal eigenbasis
+        for the Dirichlet Laplacian on bounded domains is part of the
+        variational theory presented in <span class="citation"
+        data-cites="stinnerPDE1"></span>. The explicit sine basis is the
+        special one-dimensional formula on the interval.</p>
+        <h1 data-number="3"
+        id="semigroups-and-abstract-formulation"><span
+        class="header-section-number">3</span> Semigroups and Abstract
+        Formulation</h1>
+        <h2 data-number="3.1" id="c_0-semigroups"><span
+        class="header-section-number">3.1</span> <span
+        class="math inline">\(C_0\)</span>-semigroups</h2>
+        <p>The deterministic heat equation can be written as an ordinary
+        differential equation on an infinite-dimensional function space.
+        This requires semigroup theory.</p>
+        <div class="definition">
+        <p><strong>Definition 1</strong>. <em>Let <span
+        class="math inline">\(X\)</span> be a Banach space. A family
+        <span class="math inline">\((S(t))_{t\ge0}\subset\mathcal
+        L(X)\)</span> is called a semigroup if <span
+        class="math display">\[S(0)=\mathrm{Id},
+          \qquad
+          S(t)S(s)=S(t+s)
+          \quad\text{for all }s,t\ge0.\]</span> It is called strongly
+        continuous, or a <span
+        class="math inline">\(C_0\)</span>-semigroup, if <span
+        class="math display">\[\lim_{t\downarrow0}S(t)x=x
+          \qquad\text{for all }x\in X.\]</span></em></p>
+        </div>
+        <p>If <span class="math inline">\(A\)</span> is the generator of
+        a <span class="math inline">\(C_0\)</span>-semigroup, then the
+        abstract Cauchy problem <span
+        class="math display">\[\frac{\,\mathrm{d}}{\,\mathrm{d}t}u(t)=Au(t),
+          \qquad u(0)=u_0,\]</span> has the solution <span
+        class="math display">\[u(t)=S(t)u_0.\]</span> This is the
+        infinite-dimensional analogue of <span
+        class="math inline">\(u(t)=e^{tA}u_0\)</span> for a matrix <span
+        class="math inline">\(A\)</span>. The definitions and generator
+        results used here are developed in the PDE II notes <span
+        class="citation" data-cites="stinnerPDE2"></span>.</p>
+        <h2 data-number="3.2" id="the-heat-semigroup"><span
+        class="header-section-number">3.2</span> The heat semigroup</h2>
+        <p>For the Dirichlet Laplacian <span
+        class="math inline">\(A=\partial_{xx}\)</span> on <span
+        class="math inline">\(H=L^2(0,1)\)</span>, define <span
+        class="math display">\[S(t)=e^{tA}.\]</span> Using the
+        eigenbasis <span
+        class="math inline">\((e_k)_{k\in\mathbb{N}}\)</span>, the
+        semigroup acts by <span class="math display">\[S(t)v
+          =
+          \sum_{k=1}^{\infty}e^{-\lambda_k t}v_k e_k.\]</span> In
+        particular, <span class="math display">\[S(t)e_k=e^{-\lambda_k
+        t}e_k.\]</span> For every <span
+        class="math inline">\(t\ge0\)</span>, <span
+        class="math inline">\(S(t)\)</span> is a contraction on <span
+        class="math inline">\(H\)</span>: <span
+        class="math display">\[\left\lVert S(t)v \right\rVert_H^2
+          =
+          \sum_{k=1}^{\infty}e^{-2\lambda_k t}|v_k|^2
+          \le
+          \left\lVert v \right\rVert_H^2.\]</span> The deterministic
+        homogeneous heat equation with Dirichlet boundary conditions can
+        therefore be written as <span
+        class="math display">\[u&#39;(t)=Au(t),
+          \qquad u(0)=u_0,\]</span> with solution <span
+        class="math display">\[u(t)=S(t)u_0.\]</span></p>
+        <h2 data-number="3.3"
+        id="inhomogeneous-deterministic-equation"><span
+        class="header-section-number">3.3</span> Inhomogeneous
+        deterministic equation</h2>
+        <p>Before turning to noise it is useful to recall the
+        deterministic inhomogeneous problem <span
+        class="math display">\[u&#39;(t)=Au(t)+f(t),
+          \qquad u(0)=u_0.\]</span> For a deterministic source term
+        <span class="math inline">\(f\)</span>, the
+        variation-of-constants formula gives <span
+        class="math display">\[u(t)=S(t)u_0+\int_0^t
+        S(t-s)f(s)\,\mathrm{d}s.\]</span> In PDE notation this
+        corresponds, for example, to <span
+        class="math display">\[\partial_t
+        u(t,x)=\partial_{xx}u(t,x)+f(t,x)\]</span> with the same initial
+        and boundary conditions as above. Thus the mild formulation is
+        not a new idea introduced only for stochastic equations; in the
+        deterministic setting it is precisely the variation-of-constants
+        formula from semigroup theory <span class="citation"
+        data-cites="stinnerPDE2"></span>. In the stochastic setting the
+        same formula is used as the guiding analogy, but the
+        deterministic integral is replaced by a stochastic integral with
+        respect to a Wiener process. Giving meaning to this stochastic
+        integral is the next step.</p>
+        <h1 data-number="4"
+        id="brownian-motion-wiener-processes-and-cylindrical-noise"><span
+        class="header-section-number">4</span> Brownian Motion, Wiener
+        Processes and Cylindrical Noise</h1>
+        <h2 data-number="4.1" id="brownian-motion"><span
+        class="header-section-number">4.1</span> Brownian motion</h2>
+        <div class="definition">
+        <p><strong>Definition 2</strong>. <em>A real-valued stochastic
+        process <span class="math inline">\((\beta(t))_{t\ge0}\)</span>
+        is a standard Brownian motion if</em></p>
+        <ol>
+        <li><p><em><span class="math inline">\(\beta(0)=0\)</span>
+        almost surely,</em></p></li>
+        <li><p><em><span
+        class="math inline">\(\beta(t)-\beta(s)\sim\mathcal
+        N(0,t-s)\)</span> for <span class="math inline">\(0\le
+        s&lt;t\)</span>,</em></p></li>
+        <li><p><em>the increments are independent,</em></p></li>
+        <li><p><em>the paths are continuous almost surely.</em></p></li>
+        </ol>
+        </div>
+        <p>Brownian motion is also called a Wiener process. It is the
+        basic driving noise for finite-dimensional stochastic
+        differential equations; see <span class="citation"
+        data-cites="delSarto2025"></span>.</p>
+        <h2 data-number="4.2" id="hilbert-space-setup"><span
+        class="header-section-number">4.2</span> Hilbert-space
+        setup</h2>
+        <p>We work on <span class="math display">\[H=L^2(0,1)\]</span>
+        with orthonormal basis <span
+        class="math display">\[e_k(x)=\sqrt{2}\sin(k\pi x),
+          \qquad k\in\mathbb{N}.\]</span> Let <span
+        class="math inline">\((\beta_k)_{k\in\mathbb{N}}\)</span> be
+        independent real standard Brownian motions on a filtered
+        probability space <span class="math display">\[(\Omega,\mathcal
+        F,(\mathcal F_t)_{t\ge0},\mathbb{P}).\]</span></p>
+        <h2 data-number="4.3" id="cylindrical-wiener-process"><span
+        class="header-section-number">4.3</span> Cylindrical Wiener
+        process</h2>
+        <p>One would like to write <span
+        class="math display">\[W(t)=\sum_{k=1}^{\infty}\beta_k(t)e_k.\]</span>
+        However, this series does not converge in <span
+        class="math inline">\(H\)</span>. Indeed, by orthonormality,
+        <span class="math display">\[\mathbb{E}\left\lVert W(t)
+        \right\rVert_H^2
+          =
+          \sum_{k=1}^{\infty}\mathbb{E}|\beta_k(t)|^2
+          =
+          \sum_{k=1}^{\infty} t
+          =
+          \infty.\]</span> Thus <span
+        class="math inline">\(W(t)\)</span> is not an <span
+        class="math inline">\(H\)</span>-valued random variable. This is
+        the main mathematical reason why space-time white noise is
+        singular.</p>
+        <div class="definition">
+        <p><strong>Definition 3</strong>. <em>Let <span
+        class="math inline">\((e_k)_{k\in\mathbb{N}}\)</span> be an
+        orthonormal basis of <span class="math inline">\(H\)</span> and
+        let <span
+        class="math inline">\((\beta_k)_{k\in\mathbb{N}}\)</span> be
+        independent real Brownian motions. The formal process <span
+        class="math display">\[W(t)=\sum_{k=1}^{\infty}\beta_k(t)e_k\]</span>
+        is called a cylindrical Wiener process on <span
+        class="math inline">\(H\)</span>. Equivalently, it is defined by
+        its action on test functions <span class="math inline">\(h\in
+        H\)</span>: <span class="math display">\[W_t(h)
+          =
+          \sum_{k=1}^{\infty}\left\langle h,e_k
+        \right\rangle_H\beta_k(t).\]</span></em></p>
+        </div>
+        <p>For fixed <span class="math inline">\(h\in H\)</span>, this
+        series converges in <span
+        class="math inline">\(L^2(\Omega)\)</span>, since <span
+        class="math display">\[\mathbb{E}|W_t(h)|^2
+          =
+          t\sum_{k=1}^{\infty}|\left\langle h,e_k \right\rangle_H|^2
+          =
+          t\left\lVert h \right\rVert_H^2.\]</span> Hence <span
+        class="math display">\[W_t(h)\sim\mathcal N(0,t\left\lVert h
+        \right\rVert_H^2).\]</span> Moreover, for <span
+        class="math inline">\(g,h\in H\)</span>, <span
+        class="math display">\[\begin{aligned}
+          \mathbb{E}\bigl[W_t(h)W_s(g)\bigr]
+          &amp;=
+          \mathbb{E}\left[
+            \sum_{k=1}^{\infty}\left\langle h,e_k
+        \right\rangle_H\beta_k(t)
+            \sum_{\ell=1}^{\infty}\left\langle g,e_\ell
+        \right\rangle_H\beta_\ell(s)
+          \right]  \\
+          &amp;=
+          \sum_{k,\ell=1}^{\infty}
+          \left\langle h,e_k \right\rangle_H\left\langle g,e_\ell
+        \right\rangle_H
+          \mathbb{E}[\beta_k(t)\beta_\ell(s)]  \\
+          &amp;=
+          (t\wedge s)
+          \sum_{k=1}^{\infty}\left\langle h,e_k
+        \right\rangle_H\left\langle g,e_k \right\rangle_H  \\
+          &amp;=
+          (t\wedge s)\left\langle h,g \right\rangle_H,
+        \end{aligned}\]</span> where independence gives <span
+        class="math inline">\(\mathbb{E}[\beta_k(t)\beta_\ell(s)]=(t\wedge
+        s)\delta_{k\ell}\)</span>, and the last identity is Parseval’s
+        formula. This is the rigorous way to treat the formal series
+        when the covariance operator is the identity. In the terminology
+        of <span class="citation" data-cites="delSarto2025"></span>, it
+        is a generalized Wiener process with covariance <span
+        class="math inline">\(Q=\mathrm{Id}\)</span>, hence a
+        cylindrical Wiener process.</p>
+        <div class="remark">
+        <p><strong>Remark 4</strong>. <em>Hairer’s notes define this
+        object in a coordinate-free way: <span
+        class="math inline">\(W_t\)</span> is a Gaussian linear map on
+        test functions such that <span
+        class="math display">\[\mathbb{E}[W_t(h)W_s(g)]=(t\wedge
+        s)\left\langle h,g \right\rangle_H\]</span> for all <span
+        class="math inline">\(g,h\in H\)</span> <span class="citation"
+        data-cites="hairer2009"></span>. The construction in <span
+        class="citation" data-cites="delSarto2025"></span> uses an
+        orthonormal basis to realize the same object by the series <span
+        class="math inline">\(\sum_k\beta_k(t)e_k\)</span>. The two
+        viewpoints are equivalent for the present purpose, because the
+        law of <span class="math inline">\(W_t(h)\)</span> depends only
+        on <span class="math inline">\(\left\lVert h
+        \right\rVert_H\)</span> and the covariance formula above, not on
+        the particular orthonormal basis used to represent <span
+        class="math inline">\(h\)</span>.</em></p>
+        </div>
+        <h1 data-number="5"
+        id="the-stochastic-heat-equation-as-an-abstract-spde"><span
+        class="header-section-number">5</span> The Stochastic Heat
+        Equation as an Abstract SPDE</h1>
+        <h2 data-number="5.1" id="abstract-formulation"><span
+        class="header-section-number">5.1</span> Abstract
+        formulation</h2>
+        <p>As in the deterministic case, the starting point is an
+        abstract Cauchy problem. The difference is that the forcing is
+        now random. Formally, the stochastic heat equation becomes a
+        stochastic differential equation on the Hilbert space <span
+        class="math inline">\(H=L^2(0,1)\)</span>. This notation should
+        still be read with care: the time derivative of the driving
+        noise is only a distributional object, and <span
+        class="math inline">\(W(t)\)</span> itself is cylindrical rather
+        than <span class="math inline">\(H\)</span>-valued <span
+        class="citation"
+        data-cites="delSarto2025 hairer2009"></span>.</p>
+        <p>Let <span class="math display">\[H=L^2(0,1),
+          \qquad
+          A=\partial_{xx},
+          \qquad
+          D(A)=H^2(0,1)\cap H_0^1(0,1).\]</span> Let <span
+        class="math inline">\(W\)</span> be a cylindrical Wiener process
+        on <span class="math inline">\(H\)</span>. The stochastic heat
+        equation with additive space-time white noise is formally <span
+        class="math display">\[\,\mathrm{d}u(t)=Au(t)\,\mathrm{d}t+\,\mathrm{d}W_t,
+          \qquad u(0)=u_0.\]</span> In PDE notation this corresponds to
+        <span class="math display">\[\partial_t
+        u(t,x)=\partial_{xx}u(t,x)+\dot W(t,x),
+          \qquad x\in(0,1),\quad t&gt;0,\]</span> with boundary
+        conditions <span
+        class="math display">\[u(t,0)=u(t,1)=0.\]</span></p>
+        <h2 data-number="5.2"
+        id="why-the-classical-formulation-is-not-sufficient"><span
+        class="header-section-number">5.2</span> Why the classical
+        formulation is not sufficient</h2>
+        <p>There are two related obstacles. First, the cylindrical
+        Wiener process <span class="math inline">\(W(t)\)</span> is not
+        an <span class="math inline">\(H\)</span>-valued random
+        variable. Second, the formal derivative <span
+        class="math inline">\(\dot W(t,x)\)</span> is not a classical
+        function but only a distributional symbol. Consequently, the
+        expression <span class="math display">\[Au(t)+\dot W(t)\]</span>
+        is not meaningful as an <span
+        class="math inline">\(H\)</span>-valued classical right-hand
+        side. One therefore does not first search for a pointwise
+        differentiable solution. The appropriate object is a mild
+        solution, obtained by integrating the equation against the heat
+        semigroup <span class="citation"
+        data-cites="delSarto2025 daPratoZabczyk"></span>.</p>
+        <h1 data-number="6" id="mild-solutions"><span
+        class="header-section-number">6</span> Mild Solutions</h1>
+        <p>Let <span class="math inline">\(S(t)=e^{tA}\)</span> be the
+        heat semigroup generated by <span
+        class="math inline">\(A\)</span>.</p>
+        <h2 data-number="6.1"
+        id="stochastic-integral-with-cylindrical-noise"><span
+        class="header-section-number">6.1</span> Stochastic integral
+        with cylindrical noise</h2>
+        <p>Because <span class="math inline">\(W\)</span> is cylindrical
+        rather than <span class="math inline">\(H\)</span>-valued, not
+        every bounded operator can be integrated against <span
+        class="math inline">\(W\)</span>. The smoothing of the heat
+        semigroup enters through the Hilbert-Schmidt norm. If <span
+        class="math inline">\(B\in\mathcal L(H)\)</span>, then <span
+        class="math display">\[\left\lVert B
+        \right\rVert_{\mathrm{HS}}^2
+          =
+          \sum_{k=1}^{\infty}\left\lVert Be_k \right\rVert_H^2\]</span>
+        whenever this sum is finite. The value is independent of the
+        chosen orthonormal basis. Such operators are called
+        Hilbert-Schmidt operators; this is the operator class used to
+        integrate against cylindrical Wiener processes <span
+        class="citation"
+        data-cites="delSarto2025 daPratoZabczyk"></span>.</p>
+        <p>For a deterministic operator-valued function <span
+        class="math inline">\(\Phi:[0,t]\to\mathcal L(H)\)</span>
+        satisfying <span class="math display">\[\int_0^t\left\lVert
+        \Phi(s)
+        \right\rVert_{\mathrm{HS}}^2\,\mathrm{d}s&lt;\infty,\]</span>
+        the stochastic integral is defined by the <span
+        class="math inline">\(L^2(\Omega;H)\)</span>-limit <span
+        class="math display">\[\int_0^t \Phi(s)\,\mathrm{d}W_s
+          =
+          \lim_{M\to\infty}
+          \sum_{k=1}^{M}\int_0^t
+        \Phi(s)e_k\,\mathrm{d}\beta_k(s).\]</span> The Ito isometry for
+        cylindrical noise, stated in Appendix <a
+        href="#app:ito-isometry" data-reference-type="ref"
+        data-reference="app:ito-isometry">11</a>, gives <span
+        class="math display">\[\mathbb{E}\left\|\int_0^t
+        \Phi(s)\,\mathrm{d}W_s\right\|_H^2
+          =
+          \int_0^t\left\lVert \Phi(s)
+        \right\rVert_{\mathrm{HS}}^2\,\mathrm{d}s.\]</span></p>
+        <div class="remark">
+        <p><strong>Remark 5</strong>. <em>For random integrands one also
+        requires the usual measurability and adaptedness, or
+        predictability, assumptions so that the integrand only uses
+        information available up to the current time. In the linear
+        additive equation treated here the integrand <span
+        class="math inline">\(S(t-s)\)</span> is deterministic, so this
+        issue is harmless. It becomes essential for multiplicative
+        noise.</em></p>
+        </div>
+        <div class="remark">
+        <p><strong>Remark 6</strong>. <em>Hairer’s notes often formulate
+        stochastic integrals and white noise without choosing a
+        distinguished orthonormal basis, starting instead from Gaussian
+        families indexed by test functions <span class="citation"
+        data-cites="hairer2009"></span>. The basis construction above is
+        the concrete Hilbert-space version used in <span
+        class="citation" data-cites="delSarto2025"></span>. The
+        definitions agree because the resulting integrals have the same
+        covariance structure, as expressed by the Ito isometry.</em></p>
+        </div>
+        <h2 data-number="6.2" id="definition"><span
+        class="header-section-number">6.2</span> Definition</h2>
+        <div class="definition">
+        <p><strong>Definition 7</strong>. <em>An <span
+        class="math inline">\(H\)</span>-valued adapted process <span
+        class="math inline">\((u(t))_{t\ge0}\)</span> is called a mild
+        solution of the stochastic heat equation if, for every <span
+        class="math inline">\(t\ge0\)</span>, <span
+        class="math display">\[u(t)
+          =
+          S(t)u_0
+          +
+          \int_0^t S(t-s)\,\mathrm{d}W_s.\]</span> The stochastic
+        integral <span class="math display">\[\int_0^t
+        S(t-s)\,\mathrm{d}W_s\]</span> is called the stochastic
+        convolution.</em></p>
+        </div>
+        <p>This formula is the stochastic analogue of the deterministic
+        variation-of-constants formula. The stochastic convolution is
+        the central object in the theory of linear SPDEs with additive
+        noise; see <span class="citation"
+        data-cites="delSarto2025"></span>.</p>
+        <div class="remark">
+        <p><strong>Remark 8</strong>. <em>For the linear additive
+        equation, the weak and mild formulations are equivalent under
+        the standard assumptions on <span
+        class="math inline">\(A\)</span>, <span
+        class="math inline">\(S(t)\)</span>, <span
+        class="math inline">\(u_0\)</span>, and the stochastic
+        convolution <span class="citation"
+        data-cites="daPratoZabczyk delSarto2025"></span>. The mild
+        formulation is the natural one for this numerical seminar
+        because it takes the variation-of-constants formula as the
+        definition of the solution and leads immediately to the spectral
+        Galerkin method below. Weak formulations are often more
+        intrinsic analytically, but they are less direct for
+        implementing the modal approximation.</em></p>
+        </div>
+        <h1 data-number="7"
+        id="spectral-decomposition-and-existence-of-the-solution"><span
+        class="header-section-number">7</span> Spectral Decomposition
+        and Existence of the Solution</h1>
+        <h2 data-number="7.1" id="fourier-representation"><span
+        class="header-section-number">7.1</span> Fourier
+        representation</h2>
+        <p>Write <span
+        class="math display">\[u_0=\sum_{k=1}^{\infty}u_{0,k}e_k,
+          \qquad
+          u_{0,k}=\left\langle u_0,e_k \right\rangle_H.\]</span> The
+        deterministic part is <span class="math display">\[S(t)u_0
+          =
+          \sum_{k=1}^{\infty}e^{-\lambda_k t}u_{0,k}e_k.\]</span> For
+        the stochastic convolution, the definition of the integral with
+        respect to the cylindrical Wiener process gives <span
+        class="math display">\[\begin{aligned}
+          \int_0^t S(t-s)\,\mathrm{d}W_s
+          &amp;=
+          \lim_{M\to\infty}
+          \sum_{k=1}^{M}
+          \int_0^t S(t-s)e_k\,\mathrm{d}\beta_k(s)  \\
+          &amp;=
+          \lim_{M\to\infty}
+          \sum_{k=1}^{M}
+          \left(\int_0^t
+        e^{-\lambda_k(t-s)}\,\mathrm{d}\beta_k(s)\right)e_k,
+        \end{aligned}\]</span> where the convergence is in <span
+        class="math inline">\(L^2(\Omega;H)\)</span>. Hence the mild
+        solution has the spectral representation <span
+        class="math display">\[u(t)
+          =
+          \sum_{k=1}^{\infty}
+          \left(
+            e^{-\lambda_k t}u_{0,k}
+            +
+            \int_0^t e^{-\lambda_k(t-s)}\,\mathrm{d}\beta_k(s)
+          \right)e_k.\]</span> Equivalently, if <span
+        class="math inline">\(u(t)=\sum_k u_k(t)e_k\)</span>, then
+        comparison of the Fourier coefficients gives <span
+        class="math display">\[u_k(t)
+          =
+          e^{-\lambda_k t}u_{0,k}
+          +
+          \int_0^t e^{-\lambda_k(t-s)}\,\mathrm{d}\beta_k(s).\]</span>
+        This is exactly the mild form of the scalar Ornstein–Uhlenbeck
+        equation <span
+        class="math display">\[\,\mathrm{d}u_k(t)=-\lambda_k
+        u_k(t)\,\mathrm{d}t+\,\mathrm{d}\beta_k(t),
+          \qquad u_k(0)=u_{0,k}.\]</span> The mode-wise interpretation
+        is standard for linear additive SPDEs diagonalized by the
+        generator eigenbasis <span class="citation"
+        data-cites="delSarto2025 lordPowellShardlow"></span>.</p>
+        <h2 data-number="7.2" id="existence-theorem"><span
+        class="header-section-number">7.2</span> Existence theorem</h2>
+        <div class="theorem">
+        <p><strong>Theorem 9</strong> (Existence of the mild solution in
+        <span class="math inline">\(L^2(0,1)\)</span>). <em>Let <span
+        class="math inline">\(H=L^2(0,1)\)</span>, let <span
+        class="math inline">\(A=\partial_{xx}\)</span> with homogeneous
+        Dirichlet boundary conditions, and let <span
+        class="math inline">\(W\)</span> be a cylindrical Wiener process
+        on <span class="math inline">\(H\)</span>. For every <span
+        class="math inline">\(u_0\in H\)</span> and every <span
+        class="math inline">\(t&gt;0\)</span>, <span
+        class="math display">\[u(t)=S(t)u_0+\int_0^t
+        S(t-s)\,\mathrm{d}W_s\]</span> is a well-defined <span
+        class="math inline">\(H\)</span>-valued random variable.
+        Moreover, <span class="math display">\[\mathbb{E}\left\lVert
+        u(t) \right\rVert_H^2&lt;\infty.\]</span></em></p>
+        </div>
+        <div class="proof">
+        <p><em>Proof.</em> Step 1: well-defined deterministic and
+        stochastic terms. The deterministic term is well-defined since
+        <span class="math inline">\(S(t)\)</span> is a contraction on
+        <span class="math inline">\(H\)</span>: <span
+        class="math display">\[\left\lVert S(t)u_0 \right\rVert_H\le
+        \left\lVert u_0 \right\rVert_H.\]</span> For the stochastic term
+        we check the Hilbert-Schmidt condition. Since <span
+        class="math inline">\(S(r)e_k=e^{-\lambda_k r}e_k\)</span>,
+        <span class="math display">\[\left\lVert S(r)
+        \right\rVert_{\mathrm{HS}}^2
+          =
+          \sum_{k=1}^{\infty}\left\lVert S(r)e_k \right\rVert_H^2
+          =
+          \sum_{k=1}^{\infty}e^{-2\lambda_k r}.\]</span> Therefore <span
+        class="math display">\[\int_0^t\left\lVert S(r)
+        \right\rVert_{\mathrm{HS}}^2\,\mathrm{d}r
+          =
+          \sum_{k=1}^{\infty}\int_0^t e^{-2\lambda_k r}\,\mathrm{d}r
+          =
+          \sum_{k=1}^{\infty}\frac{1-e^{-2\lambda_k
+        t}}{2\lambda_k}.\]</span> Since <span
+        class="math inline">\(\lambda_k=(k\pi)^2\)</span>, <span
+        class="math display">\[\sum_{k=1}^{\infty}\frac{1}{\lambda_k}
+          =
+          \frac{1}{\pi^2}\sum_{k=1}^{\infty}\frac{1}{k^2}
+          &lt;\infty.\]</span> Thus <span class="math inline">\(\int_0^t
+        S(t-s)\,\mathrm{d}W_s\)</span> is well-defined as an <span
+        class="math inline">\(H\)</span>-valued stochastic integral.</p>
+        <p>Step 2: second-moment estimate. Define <span
+        class="math display">\[Z(t)=\int_0^t S(t-s)\,\mathrm{d}W_s
+          =
+          \sum_{k=1}^{\infty}
+          \left(
+            \int_0^t e^{-\lambda_k(t-s)}\,\mathrm{d}\beta_k(s)
+          \right)e_k.\]</span> By the Ito isometry, <span
+        class="math display">\[\mathbb{E}\left|
+            \int_0^t e^{-\lambda_k(t-s)}\,\mathrm{d}\beta_k(s)
+          \right|^2
+          =
+          \int_0^t e^{-2\lambda_k(t-s)}\,\mathrm{d}s
+          =
+          \frac{1-e^{-2\lambda_k t}}{2\lambda_k}.\]</span> Therefore
+        <span class="math display">\[\mathbb{E}\left\lVert Z(t)
+        \right\rVert_H^2
+          =
+          \sum_{k=1}^{\infty}
+          \frac{1-e^{-2\lambda_k t}}{2\lambda_k}
+          \le
+          \frac12\sum_{k=1}^{\infty}\frac{1}{\lambda_k}
+          &lt;\infty.\]</span> The convergence of the series follows
+        from <span
+        class="math inline">\(\lambda_k=(k\pi)^2\)</span>.</p>
+        <p>Step 3: combination and uniqueness. Since the stochastic
+        convolution is centered, the deterministic and stochastic parts
+        give <span class="math display">\[\mathbb{E}\left\lVert u(t)
+        \right\rVert_H^2
+          =
+          \left\lVert S(t)u_0 \right\rVert_H^2
+          +
+          \mathbb{E}\left\lVert Z(t) \right\rVert_H^2
+          &lt;\infty.\]</span> The mild solution is unique in this
+        class, because the formula determines all Fourier coefficients
+        uniquely; equivalently, each coefficient is the unique solution
+        of its scalar Ornstein–Uhlenbeck equation. This is the standard
+        linear additive SPDE uniqueness argument <span class="citation"
+        data-cites="delSarto2025 daPratoZabczyk"></span>. ◻</p>
+        </div>
+        <div class="remark">
+        <p><strong>Remark 10</strong> (Spatial regularity). <em>The same
+        computation also shows the limited spatial regularity caused by
+        white noise. For <span class="math inline">\(u_0=0\)</span> and
+        <span class="math inline">\(\gamma\ge0\)</span>, <span
+        class="math display">\[\mathbb{E}\left\lVert (-A)^\gamma Z(t)
+        \right\rVert_H^2
+          =
+          \sum_{k=1}^{\infty}
+          \lambda_k^{2\gamma}
+          \frac{1-e^{-2\lambda_k t}}{2\lambda_k}.\]</span> Since <span
+        class="math inline">\(\lambda_k=(k\pi)^2\)</span>, the summand
+        behaves like <span class="math inline">\(k^{4\gamma-2}\)</span>.
+        The series is finite precisely for <span
+        class="math inline">\(\gamma&lt;1/4\)</span>. Thus the
+        stochastic part is in <span
+        class="math inline">\(D((-A)^\gamma)\)</span> for every <span
+        class="math inline">\(\gamma&lt;1/4\)</span>, but in general not
+        for <span class="math inline">\(\gamma\ge1/4\)</span>. In
+        Sobolev language this corresponds to spatial regularity strictly
+        below <span class="math inline">\(H^{1/2}(0,1)\)</span>. This
+        regularity threshold is a standard feature of the
+        one-dimensional stochastic heat equation with additive white
+        noise <span class="citation"
+        data-cites="daPratoZabczyk hairer2009"></span>.</em></p>
+        </div>
+        <div class="remark">
+        <p><strong>Remark 11</strong> (Higher spatial dimensions).
+        <em>On a bounded domain in dimension <span
+        class="math inline">\(d\)</span>, the proof changes at exactly
+        the point where the eigenvalue sum is estimated. By Weyl’s law,
+        <span class="math inline">\(\lambda_j\sim Cj^{2/d}\)</span>. The
+        condition for an <span class="math inline">\(L^2\)</span>-valued
+        stochastic convolution with space-time white noise becomes <span
+        class="math display">\[\sum_{j=1}^{\infty}\frac1{\lambda_j}&lt;\infty,\]</span>
+        which holds only for <span class="math inline">\(d=1\)</span>.
+        In <span class="math inline">\(d=2\)</span> the corresponding
+        series behaves like <span class="math inline">\(\sum_j
+        j^{-1}\)</span> and diverges logarithmically; for <span
+        class="math inline">\(d\ge3\)</span> it diverges even more
+        strongly. Thus the one-dimensional proof does not extend to an
+        <span class="math inline">\(L^2\)</span>-valued solution driven
+        by spatially white noise in higher dimensions. One then has to
+        use spatially colored noise, weaker distribution-valued solution
+        spaces, or, for singular nonlinear equations, renormalization
+        <span class="citation"
+        data-cites="daPratoZabczyk hairer2009"></span>.</em></p>
+        </div>
+        <h1 data-number="8"
+        id="numerical-simulation-and-convergence"><span
+        class="header-section-number">8</span> Numerical Simulation and
+        Convergence</h1>
+        <h2 data-number="8.1" id="spectral-galerkin-approximation"><span
+        class="header-section-number">8.1</span> Spectral Galerkin
+        approximation</h2>
+        <p>The numerical idea is to approximate the infinite Fourier
+        expansion by keeping only the first <span
+        class="math inline">\(N\)</span> eigenfunctions. This replaces
+        the infinite-dimensional SPDE by a finite-dimensional system of
+        <span class="math inline">\(N\)</span> stochastic differential
+        equations. In the sine basis these equations are decoupled,
+        because the basis diagonalizes the operator <span
+        class="math inline">\(A\)</span>. For <span
+        class="math inline">\(N\in\mathbb{N}\)</span>, the Galerkin
+        space is <span
+        class="math display">\[H_N=\operatorname{span}\{e_1,\dots,e_N\}\]</span>
+        and let <span class="math inline">\(P_N:H\to H_N\)</span> be the
+        orthogonal projection <span
+        class="math display">\[P_Nv=\sum_{k=1}^{N}\left\langle v,e_k
+        \right\rangle_H e_k.\]</span> The spectral Galerkin
+        approximation is <span
+        class="math display">\[\,\mathrm{d}u^N(t)=A_Nu^N(t)\,\mathrm{d}t+P_N\,\mathrm{d}W_t,
+          \qquad
+          u^N(0)=P_Nu_0,\]</span> where <span
+        class="math inline">\(A_N=P_NA\)</span>. Its mild solution is
+        <span class="math display">\[u^N(t)
+          =
+          S(t)P_Nu_0
+          +
+          \int_0^t S(t-s)P_N\,\mathrm{d}W_s.\]</span> Equivalently,
+        <span
+        class="math display">\[u^N(t,x)=\sum_{k=1}^{N}u_k(t)e_k(x),\]</span>
+        where <span class="math display">\[\,\mathrm{d}u_k(t)=-\lambda_k
+        u_k(t)\,\mathrm{d}t+\,\mathrm{d}\beta_k(t),
+          \qquad k=1,\dots,N.\]</span></p>
+        <h2 data-number="8.2"
+        id="convergence-theorem-for-spectral-truncation"><span
+        class="header-section-number">8.2</span> Convergence theorem for
+        spectral truncation</h2>
+        <div class="theorem">
+        <p><strong>Theorem 12</strong> (Mean-square convergence of
+        spectral Galerkin approximation). <em>Let <span
+        class="math inline">\(u(t)\)</span> be the mild solution of the
+        stochastic heat equation on <span
+        class="math inline">\((0,1)\)</span>, and let <span
+        class="math inline">\(u^N(t)\)</span> be its spectral Galerkin
+        approximation. Then for every <span
+        class="math inline">\(t&gt;0\)</span>, <span
+        class="math display">\[\mathbb{E}\left\lVert u(t)-u^N(t)
+        \right\rVert_H^2\longrightarrow0
+          \qquad\text{as }N\to\infty.\]</span> If additionally <span
+        class="math inline">\(u_0\in D((-A)^\alpha)\)</span> for some
+        <span class="math inline">\(\alpha&gt;0\)</span>, then <span
+        class="math display">\[\mathbb{E}\left\lVert u(t)-u^N(t)
+        \right\rVert_H^2
+          \le
+          C\lambda_{N+1}^{-2\alpha}\left\lVert (-A)^\alpha u_0
+        \right\rVert_H^2
+          +
+          C\sum_{k=N+1}^{\infty}\frac1{\lambda_k}.\]</span> In
+        particular, since <span
+        class="math inline">\(\lambda_k=(k\pi)^2\)</span>, <span
+        class="math display">\[\sum_{k=N+1}^{\infty}\frac1{\lambda_k}
+          \le
+          \frac{1}{\pi^2N},\]</span> and <span
+        class="math inline">\(\lambda_{N+1}^{-2\alpha}\le C
+        N^{-4\alpha}\)</span>. Hence <span
+        class="math display">\[\mathbb{E}\left\lVert u(t)-u^N(t)
+        \right\rVert_H^2
+          \le
+          C N^{-4\alpha}\left\lVert (-A)^\alpha u_0 \right\rVert_H^2
+          +
+          C N^{-1}.\]</span> For <span
+        class="math inline">\(u_0=0\)</span>, or if only the stochastic
+        truncation part is considered, the corresponding <span
+        class="math inline">\(L^2(\Omega;H)\)</span>-error is of order
+        <span class="math inline">\(N^{-1/2}\)</span>.</em></p>
+        </div>
+        <div class="proof">
+        <p><em>Proof.</em> Since <span
+        class="math inline">\(P_N\)</span> commutes with <span
+        class="math inline">\(S(t)\)</span> in the eigenbasis, we write
+        <span class="math display">\[u(t)-u^N(t)
+          =
+          S(t)(I-P_N)u_0
+          +
+          \int_0^t S(t-s)(I-P_N)\,\mathrm{d}W_s.\]</span> We now
+        estimate the deterministic and stochastic parts separately.</p>
+        <p><em>Step 1: convergence of the deterministic part.</em> Write
+        <span
+        class="math display">\[u_0=\sum_{k=1}^{\infty}u_{0,k}e_k.\]</span>
+        Then <span class="math display">\[S(t)(I-P_N)u_0
+          =
+          \sum_{k=N+1}^{\infty}e^{-\lambda_k t}u_{0,k}e_k,\]</span> and
+        therefore <span class="math display">\[\left\lVert
+        S(t)(I-P_N)u_0 \right\rVert_H^2
+          =
+          \sum_{k=N+1}^{\infty}e^{-2\lambda_k t}|u_{0,k}|^2
+          \longrightarrow0.\]</span> The convergence follows because the
+        right-hand side is the tail of a convergent nonnegative series
+        dominated by <span
+        class="math inline">\(\sum_{k=1}^{\infty}|u_{0,k}|^2=\left\lVert
+        u_0 \right\rVert_H^2\)</span>.</p>
+        <p><em>Step 2: rate for the deterministic part.</em> If <span
+        class="math inline">\(u_0\in D((-A)^\alpha)\)</span>, then by
+        the <span class="math inline">\(\ell^2\)</span>-norm of the
+        Fourier coefficients of <span class="math inline">\((-A)^\alpha
+        u_0\)</span>, <span
+        class="math display">\[\sum_{k=1}^{\infty}\lambda_k^{2\alpha}|u_{0,k}|^2&lt;\infty.\]</span>
+        For <span class="math inline">\(k&gt;N\)</span>, the eigenvalues
+        are increasing and therefore <span
+        class="math inline">\(\lambda_k\ge\lambda_{N+1}\)</span>. Hence
+        <span class="math display">\[1\le
+        \lambda_{N+1}^{-2\alpha}\lambda_k^{2\alpha},\]</span> which
+        implies <span class="math display">\[|u_{0,k}|^2
+          \le
+          \lambda_{N+1}^{-2\alpha}\lambda_k^{2\alpha}|u_{0,k}|^2.\]</span>
+        Thus <span class="math display">\[\left\lVert S(t)(I-P_N)u_0
+        \right\rVert_H^2
+          \le
+          \lambda_{N+1}^{-2\alpha}
+          \left\lVert (-A)^\alpha u_0 \right\rVert_H^2.\]</span></p>
+        <p><em>Step 3: convergence and rate for the stochastic
+        part.</em> By the Ito isometry for cylindrical noise from
+        Appendix <a href="#app:ito-isometry" data-reference-type="ref"
+        data-reference="app:ito-isometry">11</a>, <span
+        class="math display">\[\mathbb{E}\left\|
+            \int_0^t S(t-s)(I-P_N)\,\mathrm{d}W_s
+          \right\|_H^2
+          =
+          \int_0^t
+          \left\lVert S(t-s)(I-P_N)
+        \right\rVert_{\mathrm{HS}}^2\,\mathrm{d}s.\]</span> For <span
+        class="math inline">\(r&gt;0\)</span>, <span
+        class="math display">\[S(r)(I-P_N)e_k
+          =
+          \begin{cases}
+            0, &amp; k\le N,\\
+            e^{-\lambda_k r}e_k, &amp; k&gt;N.
+          \end{cases}\]</span> Therefore <span
+        class="math display">\[\left\lVert S(r)(I-P_N)
+        \right\rVert_{\mathrm{HS}}^2
+          =
+          \sum_{k=N+1}^{\infty}e^{-2\lambda_k r}.\]</span> It follows
+        that <span class="math display">\[\int_0^t
+          \sum_{k=N+1}^{\infty}e^{-2\lambda_k r}\,\mathrm{d}r
+          =
+          \sum_{k=N+1}^{\infty}
+          \frac{1-e^{-2\lambda_k t}}{2\lambda_k}
+          \le
+          \frac12\sum_{k=N+1}^{\infty}\frac1{\lambda_k}.\]</span> Since
+        <span
+        class="math display">\[\sum_{k=N+1}^{\infty}\frac1{\lambda_k}
+          =
+          \frac1{\pi^2}\sum_{k=N+1}^{\infty}\frac1{k^2}
+          \le
+          \frac1{\pi^2}\int_N^\infty \frac{\,\mathrm{d}x}{x^2}
+          =
+          \frac1{\pi^2N},\]</span> the stochastic truncation error tends
+        to zero and satisfies the bound <span
+        class="math display">\[\mathbb{E}\left\|
+            \int_0^t S(t-s)(I-P_N)\,\mathrm{d}W_s
+          \right\|_H^2
+          \le \frac{1}{2\pi^2N}.\]</span></p>
+        <p><em>Step 4: combination of the errors.</em> Finally, <span
+        class="math display">\[\left\lVert a+b
+        \right\rVert_H^2\le2\left\lVert a \right\rVert_H^2+2\left\lVert
+        b \right\rVert_H^2\]</span> gives <span
+        class="math display">\[\mathbb{E}\left\lVert u(t)-u^N(t)
+        \right\rVert_H^2
+          \le
+          2\left\lVert S(t)(I-P_N)u_0 \right\rVert_H^2
+          +
+          2\mathbb{E}\left\|
+            \int_0^t S(t-s)(I-P_N)\,\mathrm{d}W_s
+          \right\|_H^2.\]</span> Both terms converge to zero. The
+        quantitative estimate follows from the two bounds above. ◻</p>
+        </div>
+        <div class="remark">
+        <p><strong>Remark 13</strong> (Higher-dimensional convergence).
+        <em>As explained in the previous remark on higher spatial
+        dimensions, the eigenvalue sum <span
+        class="math inline">\(\sum_j\lambda_j^{-1}\)</span> diverges for
+        spatially white noise when <span
+        class="math inline">\(d\ge2\)</span>. Therefore the stochastic
+        convolution is not <span
+        class="math inline">\(L^2\)</span>-valued in that case, and the
+        above <span
+        class="math inline">\(L^2(\Omega;H)\)</span>-convergence proof
+        does not carry over directly. One must first change the setting,
+        for example by using colored noise or weaker solution spaces
+        <span class="citation"
+        data-cites="daPratoZabczyk lordPowellShardlow"></span>.</em></p>
+        </div>
+        <h2 data-number="8.3" id="time-discretization"><span
+        class="header-section-number">8.3</span> Time
+        discretization</h2>
+        <p>For each mode <span class="math inline">\(k\le N\)</span>,
+        the Galerkin system contains the scalar SDE <span
+        class="math display">\[\,\mathrm{d}u_k(t)=-\lambda_k
+        u_k(t)\,\mathrm{d}t+\,\mathrm{d}\beta_k(t).\]</span> Starting
+        from this finite-dimensional SDE system, one would normally
+        continue with a time-stepping method such as Euler–Maruyama,
+        <span class="math display">\[u_k^{n+1}
+          =
+          u_k^n-\lambda_k u_k^n\Delta t+\Delta\beta_k^n,
+          \qquad
+          \Delta\beta_k^n\sim\mathcal N(0,\Delta t).\]</span> In the
+        present linear additive problem, however, the exact solution of
+        each mode is known. Therefore the simpler and more accurate
+        approach is to use the exact Ornstein–Uhlenbeck transition <span
+        class="math display">\[u_k(t_{n+1})
+          =
+          e^{-\lambda_k\Delta t}u_k(t_n)+\eta_k^n,\]</span> where <span
+        class="math display">\[\eta_k^n
+          \sim
+          \mathcal N\left(
+            0,
+            \frac{1-e^{-2\lambda_k\Delta t}}{2\lambda_k}
+          \right).\]</span> The random variables <span
+        class="math inline">\(\eta_k^n\)</span> are independent for
+        different <span class="math inline">\(k\)</span> and <span
+        class="math inline">\(n\)</span>. Thus the simulation is exact
+        in time for the finite-dimensional Galerkin SPDE.</p>
+        <h2 data-number="8.4"
+        id="convergence-with-exact-time-stepping"><span
+        class="header-section-number">8.4</span> Convergence with exact
+        time stepping</h2>
+        <p>If the exact Ornstein–Uhlenbeck transition is used, then on
+        the grid <span class="math display">\[t_n=n\Delta t\]</span>
+        there is no time discretization error for the finite-dimensional
+        Galerkin system. The only mathematical approximation error
+        relative to the full SPDE is the spectral truncation error:
+        <span class="math display">\[u(t_n)-u^N(t_n).\]</span>
+        Consequently, the convergence theorem above fully describes the
+        discretization error of the implemented method at grid
+        times.</p>
+        <h2 data-number="8.5" id="implementation-outline"><span
+        class="header-section-number">8.5</span> Implementation
+        outline</h2>
+        <p>For fixed <span class="math inline">\(N\)</span>, final time
+        <span class="math inline">\(T\)</span>, time step <span
+        class="math inline">\(\Delta t\)</span>, and grid <span
+        class="math inline">\(t_n=n\Delta t\)</span>, the simulation can
+        be implemented as follows.</p>
+        <ol>
+        <li><p>Compute <span
+        class="math inline">\(\lambda_k=(k\pi)^2\)</span> for <span
+        class="math inline">\(k=1,\dots,N\)</span>.</p></li>
+        <li><p>Compute the initial Fourier coefficients <span
+        class="math display">\[u_{0,k}=\int_0^1
+        u_0(x)e_k(x)\,\mathrm{d}x.\]</span></p></li>
+        <li><p>For every time step and every mode, draw <span
+        class="math display">\[\eta_k^n\sim
+            \mathcal N\left(0,\frac{1-e^{-2\lambda_k\Delta
+        t}}{2\lambda_k}\right).\]</span></p></li>
+        <li><p>Update <span
+        class="math display">\[u_k^{n+1}=e^{-\lambda_k\Delta
+        t}u_k^n+\eta_k^n.\]</span></p></li>
+        <li><p>Reconstruct the physical-space approximation by <span
+        class="math display">\[u^N(t_n,x)=\sum_{k=1}^{N}u_k^n
+        e_k(x).\]</span></p></li>
+        </ol>
+        <h1 data-number="9" id="numerical-results"><span
+        class="header-section-number">9</span> Numerical Results</h1>
+        <p>This section reports a reproducible numerical experiment
+        computed with the spectral Ornstein–Uhlenbeck simulation
+        described above. The path generation and error computation code
+        used for the table is included in Appendix <a
+        href="#app:python-code" data-reference-type="ref"
+        data-reference="app:python-code">12</a>. The numerical method
+        follows the exact modal transition from the previous subsection
+        and the standard spectral Galerkin viewpoint from <span
+        class="citation" data-cites="lordPowellShardlow"></span>.</p>
+        <h2 data-number="9.1" id="reference-experiment"><span
+        class="header-section-number">9.1</span> Reference
+        experiment</h2>
+        <p>A simple test case is <span
+        class="math display">\[u_0=0,\qquad T=1.\]</span> For each <span
+        class="math inline">\(N\)</span>, simulate <span
+        class="math inline">\(M\)</span> independent paths of <span
+        class="math inline">\(u^N(T)\)</span>. To estimate the spectral
+        error, use a larger reference dimension <span
+        class="math inline">\(N_{\mathrm{ref}}\gg N\)</span> and drive
+        both approximations with the same Brownian modes for <span
+        class="math inline">\(k\le N\)</span>. Then <span
+        class="math display">\[\left(
+            \frac1M\sum_{m=1}^{M}
+            \left\lVert u^{N_{\mathrm{ref}},(m)}(T)-u^{N,(m)}(T)
+        \right\rVert_H^2
+          \right)^{1/2}\]</span> estimates the root mean-square error.
+        The experiment below uses <span
+        class="math display">\[M=10000,\qquad N_{\mathrm{ref}}=4096,
+          \qquad \text{random seed }271828.\]</span></p>
+        <p>The theory predicts approximately <span
+        class="math display">\[\left(\mathbb{E}\left\lVert u(T)-u^N(T)
+        \right\rVert_H^2\right)^{1/2}
+          \sim N^{-1/2}\]</span> for the stochastic truncation part.</p>
+        <table>
+        <caption>Monte Carlo convergence table for the spectral Galerkin
+        approximation with <span class="math inline">\(u_0=0\)</span>,
+        <span class="math inline">\(T=1\)</span>, <span
+        class="math inline">\(M=10000\)</span> paths, and <span
+        class="math inline">\(N_{\mathrm{ref}}=4096\)</span>. The rate
+        is computed between consecutive rows and is close to the
+        predicted root mean-square rate <span
+        class="math inline">\(N^{-1/2}\)</span>.</caption>
+        <thead>
+        <tr>
+        <th style="text-align: center;"><span
+        class="math inline">\(N\)</span></th>
+        <th style="text-align: center;">empirical RMS error</th>
+        <th style="text-align: center;">estimated rate</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td style="text-align: center;"><span
+        class="math inline">\(8\)</span></td>
+        <td style="text-align: center;"><span
+        class="math inline">\(0.077158\)</span></td>
+        <td style="text-align: center;">–</td>
+        </tr>
+        <tr>
+        <td style="text-align: center;"><span
+        class="math inline">\(16\)</span></td>
+        <td style="text-align: center;"><span
+        class="math inline">\(0.055312\)</span></td>
+        <td style="text-align: center;"><span
+        class="math inline">\(0.480\)</span></td>
+        </tr>
+        <tr>
+        <td style="text-align: center;"><span
+        class="math inline">\(32\)</span></td>
+        <td style="text-align: center;"><span
+        class="math inline">\(0.039370\)</span></td>
+        <td style="text-align: center;"><span
+        class="math inline">\(0.490\)</span></td>
+        </tr>
+        <tr>
+        <td style="text-align: center;"><span
+        class="math inline">\(64\)</span></td>
+        <td style="text-align: center;"><span
+        class="math inline">\(0.027804\)</span></td>
+        <td style="text-align: center;"><span
+        class="math inline">\(0.502\)</span></td>
+        </tr>
+        <tr>
+        <td style="text-align: center;"><span
+        class="math inline">\(128\)</span></td>
+        <td style="text-align: center;"><span
+        class="math inline">\(0.019552\)</span></td>
+        <td style="text-align: center;"><span
+        class="math inline">\(0.508\)</span></td>
+        </tr>
+        </tbody>
+        </table>
+        <h2 data-number="9.2" id="energy-check"><span
+        class="header-section-number">9.2</span> Energy check</h2>
+        <p>For <span class="math inline">\(u_0=0\)</span>, the exact
+        modal variance is <span
+        class="math display">\[\mathbb{E}|u_k(t)|^2
+          =
+          \frac{1-e^{-2\lambda_k t}}{2\lambda_k}.\]</span> Therefore
+        <span class="math display">\[\mathbb{E}\left\lVert u^N(t)
+        \right\rVert_H^2
+          =
+          \sum_{k=1}^{N}
+          \frac{1-e^{-2\lambda_k t}}{2\lambda_k}.\]</span> This identity
+        is a useful verification tool for simulations. The empirical
+        average of <span class="math inline">\(\left\lVert u^N(t)
+        \right\rVert_H^2\)</span> over many paths should be close to the
+        above sum. In the same experiment, for <span
+        class="math inline">\(N=128\)</span> and <span
+        class="math inline">\(T=1\)</span>, the empirical value was
+        <span class="math display">\[0.082170,\]</span> while the
+        theoretical value of the finite-dimensional energy sum was <span
+        class="math display">\[0.082939.\]</span> The relative deviation
+        is about <span class="math inline">\(0.93\%\)</span>, which is
+        consistent with Monte Carlo sampling error.</p>
+        <h2 data-number="9.3" id="snapshot-from-the-animation"><span
+        class="header-section-number">9.3</span> Snapshot from the
+        animation</h2>
+        <p>For the displayed paths we use the smooth polynomial initial
+        condition <span
+        class="math display">\[u_0(x)=10\bigl(-y^4-y^3+y^2+y\bigr),
+          \qquad y=2(x-1/2).\]</span> This function is <span
+        class="math inline">\(C^\infty\)</span>, so the deterministic
+        projection error decays faster than the stochastic truncation
+        error. The observed root mean-square convergence is therefore
+        governed by the stochastic part and follows the <span
+        class="math inline">\(N^{-1/2}\)</span> rate predicted in the
+        theorem above. In Figure <a href="#fig:animation-snapshots"
+        data-reference-type="ref"
+        data-reference="fig:animation-snapshots">1</a>, the orange curve
+        is the deterministic heat flow with this initial condition,
+        while the blue curve is one stochastic realization. The
+        comparison illustrates that the heat semigroup damps the
+        deterministic profile, whereas the stochastic solution keeps
+        receiving random high-frequency input.</p>
+        <figure id="fig:animation-snapshots" data-latex-placement="h">
+        <img src="spde_outputs/06_animation_snapshots.png" />
+        <figcaption>Four snapshots of the deterministic heat flow and
+        one stochastic realization with smooth polynomial initial
+        condition.</figcaption>
+        </figure>
+        <h2 data-number="9.4" id="expected-qualitative-behavior"><span
+        class="header-section-number">9.4</span> Expected qualitative
+        behavior</h2>
+        <p>The numerical solution is rough in space because the driving
+        noise is white in space and time. Nevertheless, the heat
+        semigroup smooths the noise enough that the solution is <span
+        class="math inline">\(L^2(0,1)\)</span>-valued in one spatial
+        dimension. Increasing <span class="math inline">\(N\)</span>
+        adds more high-frequency oscillations. Their total contribution
+        to the mean-square <span
+        class="math inline">\(L^2\)</span>-error decreases like <span
+        class="math inline">\(N^{-1}\)</span>, which corresponds to
+        <span class="math inline">\(N^{-1/2}\)</span> in root mean
+        square.</p>
+        <h1 data-number="10" id="outlook"><span
+        class="header-section-number">10</span> Outlook</h1>
+        <p>In this project we considered the linear stochastic heat
+        equation with additive space-time white noise. In this special
+        situation the spectral Galerkin approximation leads to
+        independent Ornstein–Uhlenbeck modes. These modes can be
+        simulated exactly, so that no genuine time-discretization error
+        is introduced. The numerical error studied here is therefore
+        essentially the spectral truncation error.</p>
+        <p>This is a rather favourable situation. For more general
+        SPDEs, one usually has to discretize time as well. For example,
+        for semilinear equations of the form <span
+        class="math display">\[\,\mathrm{d}u(t) =
+        \bigl(Au(t)+F(u(t))\bigr)\,\mathrm{d}t +
+        \,\mathrm{d}W_t,\]</span> the Galerkin system is no longer a
+        collection of independent Ornstein–Uhlenbeck processes. One
+        therefore typically combines a spatial discretization with
+        time-stepping schemes such as Euler–Maruyama, semi-implicit
+        Euler methods, or exponential integrators. The convergence
+        analysis then has to control both the spatial truncation error
+        and the time-discretization error.</p>
+        <p>A further difficulty appears for multiplicative noise, for
+        instance in equations of the form <span
+        class="math display">\[\,\mathrm{d}u(t) =
+        \bigl(Au(t)+F(u(t))\bigr)\,\mathrm{d}t + G(u(t))\,\mathrm{d}W_t
+        .\]</span> Here the stochastic integral depends on the solution
+        itself. Thus the noise is no longer merely an additive forcing
+        term, but interacts directly with the solution. If the driving
+        noise is very rough, the solution may itself have only
+        distributional regularity. In such cases products like <span
+        class="math inline">\(G(u)\xi\)</span>, where <span
+        class="math inline">\(\xi\)</span> denotes space-time white
+        noise, are not necessarily classically defined. This is one of
+        the central analytical difficulties in singular SPDEs.</p>
+        <p>In higher spatial dimensions this problem becomes even more
+        pronounced, since space-time white noise is rougher and the
+        stochastic convolution has lower spatial regularity. Depending
+        on the equation, one may therefore need colored noise, weaker
+        solution concepts, renormalization techniques, or modern
+        theories such as rough paths, paracontrolled distributions, or
+        regularity structures.</p>
+        <p>Thus the main rigorous message of this seminar is the
+        following: in the linear additive one-dimensional case, the
+        stochastic heat equation can be formulated as an abstract SPDE,
+        solved in mild form, represented by independent
+        Ornstein–Uhlenbeck modes, and approximated by a spectral
+        Galerkin method with a transparent mean-square convergence
+        proof. At the same time, this example also indicates why
+        nonlinear, multiplicative, or higher-dimensional SPDEs require
+        substantially more advanced analytical and numerical tools.</p>
+        <h1 data-number="11" id="app:ito-isometry"><span
+        class="header-section-number">11</span> Ito Isometry for
+        Cylindrical Noise</h1>
+        <p>The following form of the Ito isometry is the basic tool used
+        in the existence and convergence proofs. It is standard in the
+        Hilbert-space theory of stochastic integration; see <span
+        class="citation"
+        data-cites="delSarto2025 daPratoZabczyk"></span>.</p>
+        <div class="theorem">
+        <p><strong>Theorem 14</strong> (Ito isometry for deterministic
+        Hilbert-Schmidt integrands). <em>Let <span
+        class="math inline">\(W\)</span> be a cylindrical Wiener process
+        on a Hilbert space <span class="math inline">\(H\)</span>,
+        represented by <span
+        class="math display">\[W(t)=\sum_{k=1}^{\infty}\beta_k(t)e_k.\]</span>
+        Let <span class="math inline">\(\Phi:[0,T]\to\mathcal
+        L(H)\)</span> be strongly measurable and satisfy <span
+        class="math display">\[\int_0^T\left\lVert \Phi(s)
+        \right\rVert_{\mathrm{HS}}^2\,\mathrm{d}s&lt;\infty.\]</span>
+        Then <span class="math display">\[\int_0^T\Phi(s)\,\mathrm{d}W_s
+          :=
+          \lim_{M\to\infty}
+          \sum_{k=1}^{M}\int_0^T\Phi(s)e_k\,\mathrm{d}\beta_k(s)\]</span>
+        exists in <span class="math inline">\(L^2(\Omega;H)\)</span>,
+        and <span
+        class="math display">\[\mathbb{E}\left\|\int_0^T\Phi(s)\,\mathrm{d}W_s\right\|_H^2
+          =
+          \int_0^T\left\lVert \Phi(s)
+        \right\rVert_{\mathrm{HS}}^2\,\mathrm{d}s.\]</span></em></p>
+        </div>
+        <h1 data-number="12" id="app:python-code"><span
+        class="header-section-number">12</span> Python Code for Paths
+        and Error Computation</h1>
+        <p>The following code contains only the path generation and
+        error computation used for the numerical experiment. Plotting
+        code is omitted.</p>
+        <pre><code>from __future__ import annotations
+
+from dataclasses import dataclass
+import numpy as np
+
+
+Array = np.ndarray
+
+
+@dataclass(frozen=True)
+class SimulationConfig:
+    n_modes: int = 96
+    final_time: float = 0.25
+    n_time_steps: int = 250
+    seed: int | None = 1234
+
+    @property
+    def dt(self) -&gt; float:
+        return self.final_time / self.n_time_steps
+
+
+def eigenvalues(n_modes: int) -&gt; Array:
+    k = np.arange(1, n_modes + 1, dtype=float)
+    return (np.pi * k) ** 2
+
+
+def time_grid(final_time: float, n_time_steps: int) -&gt; Array:
+    return np.linspace(0.0, final_time, n_time_steps + 1)
+
+
+def ou_step_parameters(lambdas: Array, dt: float) -&gt; tuple[Array, Array]:
+    decay = np.exp(-lambdas * dt)
+    variance = -np.expm1(-2.0 * lambdas * dt) / (2.0 * lambdas)
+    return decay, np.sqrt(variance)
+
+
+def simulate_fourier_modes(
+    config: SimulationConfig,
+    initial_coefficients: Array | None = None,
+) -&gt; tuple[Array, Array]:
+    rng = np.random.default_rng(config.seed)
+    lambdas = eigenvalues(config.n_modes)
+    decay, innovation_std = ou_step_parameters(lambdas, config.dt)
+    times = time_grid(config.final_time, config.n_time_steps)
+
+    coeffs = np.empty((config.n_time_steps + 1, config.n_modes), dtype=float)
+    if initial_coefficients is None:
+        coeffs[0] = np.zeros(config.n_modes)
+    else:
+        coeffs[0] = np.asarray(initial_coefficients, dtype=float)
+
+    for n in range(config.n_time_steps):
+        noise = rng.normal(loc=0.0, scale=innovation_std, size=config.n_modes)
+        coeffs[n + 1] = decay * coeffs[n] + noise
+
+    return times, coeffs
+
+
+def rms_error_table(
+    n_values: Array = np.array([8, 16, 32, 64, 128]),
+    n_ref: int = 4096,
+    n_paths: int = 10000,
+    final_time: float = 1.0,
+    seed: int = 271828,
+    chunk_size: int = 1000,
+) -&gt; list[tuple[int, float, float | None]]:
+    rng = np.random.default_rng(seed)
+    lambdas = eigenvalues(n_ref)
+    variances = -np.expm1(-2.0 * lambdas * final_time) / (2.0 * lambdas)
+    std = np.sqrt(variances)
+
+    error_sq_sums = np.zeros(len(n_values))
+    for start in range(0, n_paths, chunk_size):
+        m = min(chunk_size, n_paths - start)
+        coeffs = rng.normal(loc=0.0, scale=std, size=(m, n_ref))
+        tail_sq = np.cumsum(coeffs[:, ::-1] ** 2, axis=1)[:, ::-1]
+        for j, n_modes in enumerate(n_values):
+            error_sq_sums[j] += np.sum(tail_sq[:, n_modes])
+
+    rms = np.sqrt(error_sq_sums / n_paths)
+    rates: list[float | None] = [None]
+    for j in range(1, len(n_values)):
+        rate = np.log(rms[j - 1] / rms[j]) / np.log(n_values[j] / n_values[j - 1])
+        rates.append(float(rate))
+
+    return [(int(n), float(e), r) for n, e, r in zip(n_values, rms, rates)]
+
+
+if __name__ == &quot;__main__&quot;:
+    for n_modes, error, rate in rms_error_table():
+        if rate is None:
+            print(f&quot;{n_modes:4d}  {error:.6f}  --&quot;)
+        else:
+            print(f&quot;{n_modes:4d}  {error:.6f}  {rate:.3f}&quot;)</code></pre>
+        <div class="thebibliography">
+        <p><span>9</span></p>
+        <p>Gianmarco Del Sarto. <em>Stochastic Equations with
+        Applications to Climate Sciences</em>. Lecture notes, TU
+        Darmstadt, Winter Semester 2025–2026.</p>
+        <p>Christian Stinner. <em>Partial Differential Equations I</em>.
+        Lecture notes, Winter term 2025/26, April 14, 2026.</p>
+        <p>Christian Stinner. <em>Partial Differential Equations
+        II</em>. Lecture notes, Summer term 2021, May 12, 2026.</p>
+        <p>Giuseppe Da Prato and Jerzy Zabczyk. <em>Stochastic Equations
+        in Infinite Dimensions</em>. Cambridge University Press,
+        1992.</p>
+        <p>Gabriel J. Lord, Catherine E. Powell, and Tony Shardlow.
+        <em>An Introduction to Computational Stochastic PDEs</em>.
+        Cambridge University Press, 2014.</p>
+        <p>Martin Hairer. <em>An Introduction to Stochastic PDEs</em>.
+        Lecture notes, 2009. Available as arXiv:0907.4178 and from <a
+        href="https://www.hairer.org/notes/SPDEs_Course.pdf"
+        class="uri">https://www.hairer.org/notes/SPDEs_Course.pdf</a>.</p>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

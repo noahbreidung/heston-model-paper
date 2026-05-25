@@ -4,6 +4,9 @@ Readable web version of the seminar paper **The Heston Model: Theory, Numerical 
 
 Live page: https://noahbreidung.github.io/heston-model-paper/
 
+Additional seminar page:
+https://noahbreidung.github.io/heston-model-paper/spde-numerics-seminar/
+
 ## Overview
 
 The paper studies the Heston stochastic volatility model under the risk-neutral measure. It combines the mathematical structure of the CIR variance process with numerical simulation, Monte Carlo option pricing and calibration to SPY implied-volatility data.
